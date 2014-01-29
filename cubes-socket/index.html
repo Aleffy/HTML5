@@ -17,7 +17,7 @@
 		canvas.height = canvas.width = 600;
 
 		var context = canvas.getContext('2d');
-		var socket = io.connect('http://localhost:4242');
+		var socket = io.connect('http://10.182.51.61:4242' );
 		socket.on('connect', function () {
 			socket.id = socket.socket.sessionid;
 		});
@@ -46,7 +46,7 @@
 			if (data.color !== undefined) this.color = data.color;
 
 		}
-		Cube.prototype.speed = 5;
+		Cube.prototype.speed = 7;
 		Cube.prototype.logic = function () {
 
 			if (this.id === socket.id) {
