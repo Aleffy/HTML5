@@ -1,4 +1,4 @@
-function player (props) {
+function Player (props) {
 	if(props.username !== undefined) this.username = props.username;
 }
 Player.prototype.sayHi = function () {
