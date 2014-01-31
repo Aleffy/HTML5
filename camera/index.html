@@ -1,0 +1,51 @@
+<html>
+<head>
+	<script src="requestAnimFrame.js"></script>
+	<script src="Keyboard.js"></script>
+</head>
+<body>
+	<canvas id="myCanvas"></canvas>
+	<script>
+		var canvas = document.getElementById('myCanvas');
+		canvas.height = canvas.width = 600;
+		var context = canvas.getContext('2d');
+		var keyboard = new KeyboardJS(false);
+
+
+
+		function Cube () {
+			this.x = Math.random()*canvas.width;
+			this.y = Math.random()*canvas.height;
+			this.edge = Math.floor(Math.random()*20)+5;
+			this.vx = Math.random()*6 - 3;
+			this.vy = Math.random()*6 - 3;
+		}
+		Cube.prototype = {
+			
+		}
+		var cubes = {};
+		for (){}
+		for (var i = 0; i < cubes.length; ++i) {
+			cubes[i].logic(dt);
+		}
+		function render (ctx) {
+			ctx.save();
+			ctx.globalAlpha = 0.3;
+			ctx.fillStyle = "#eeeeee";
+			ctx.fillRect(0,0,canvas.length, canvas.width);
+
+			ctx.globalAlpha = 1;
+			ctx.translate(-camera.x,-camera.y);
+
+			for (var i = 0; i < cubes.length; ++i) {
+				cubes[i].render(context);
+			}
+			ctx.restore();
+		}
+		window.onresize = function () {
+			canvas.width = window.innerWidth;
+			canvas.length = window.innerHeight;
+		}
+	</script>
+	</body>
+	</html>

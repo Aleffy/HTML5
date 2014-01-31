@@ -1,0 +1,89 @@
+<html>
+<head>
+	<style>
+		body {
+			margin: 0px;
+			padding: 0px;
+		}
+	</style>
+	<script src="requestAnimationFrame.js"></script>
+	<script src="keyboard.js"></script>
+</head>
+<body>
+	<canvas id="myCanvas"></canvas>
+	<script>
+	var keyboard = new KeyboardJS(true);
+	var canvas = document.getElementById('myCanvas');
+	var context = canvas.getContext('2d');
+		
+		
+		function Cube() {
+			this.x = Math.random()*canvas.width;
+			this.y = Math.random()*canvas.height;
+			this.edge = Math.floor(Math.random()*20)+5;
+			this.vx = Math.random()*6 - 3;
+			this.vy = Math.random()*6 - 3;
+		}
+		Cube.prototype = {
+			logic : function(dt) {
+				dt /= 10;
+				this.x += this.vx*dt;
+				this.y += this.vy*dt;
+				
+				var sx = Math.abs(this.vx)*10*dt;
+				var sy = Math.abs(this.vy)*10*dt;
+
+				if (keyboard.keys[38]) {
+					this.y -= this.vy*sy;
+				}
+				if(keyboard.keys[40]) {
+					this.y += this.vy*sy;
+				}
+				if(keyboard.keys[39]) {
+					this.x += this.vx*sx;
+				}
+				if(keyboard.keys[37]) {
+					this.x -= this.vx*sx;
+				}
+			},
+			render : function(ctx) {
+				ctx.fillStyle = "blue";
+				ctx.fillRect(this.x, this.y, this.edge, this.edge);
+
+			}
+		}
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+		var oldDate = +new Date ();
+		var cubes = [];
+		for (var i = 0; i < 1000; ++i) cubes.push(new Cube());
+		
+		function mainLoop() {
+			var newDate = +new Date ();
+			var delta = newDate - oldDate;
+			oldDate = newDate;
+
+			context.clearRect(0,0,canvas.width,canvas.height);
+			for(var i = 0; i < cubes.length; ++i) {
+				var cube = cubes[i];
+				cube.logic(delta);
+				cube.render(context);
+			}
+		}
+		function loopCaller() {
+			requestAnimationFrame(loopCaller);
+			mainLoop();
+		}
+		requestAnimationFrame(loopCaller);
+		window.onresize = function () {
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+			mainLoop();
+		}
+		window.onresize();
+	</script>
+	
+		
+
+</body>
+</html>

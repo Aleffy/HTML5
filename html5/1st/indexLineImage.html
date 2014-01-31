@@ -1,0 +1,45 @@
+<html>
+<head>
+	<style>
+		body {
+			margin: 0px;
+			padding: 0px;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="myCanvas"></canvas>
+
+	<script>
+		var canvas = document.getElementById("myCanvas");
+		var context = canvas.getContext('2d');
+
+		window.onresize = function () {
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+		}
+		window.onresize();
+
+		context.beginPath();
+		context.moveTo(100, 150);
+		context.lineTo(450, 50);
+		context.lineWidth = 20;
+		context.strokeStyle = "red";
+		context.stroke();
+
+		var truckImg = new Image();
+		truckImg.src = "truck.jpeg";
+
+		truckImg.onload = function() {
+			context.drawImage(truckImg, 100, 50, 50, 50);
+			/*
+			for (var x = 0; x < canvas.width; x += truckImg.width) {
+				for (var y = 0; y < canvas.height; y += truckImg.height) {
+					context.drawImage(truckImg, x, y);
+				}
+			}
+			*/
+		}
+	</script>
+</body>
+</html>

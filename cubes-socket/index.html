@@ -17,7 +17,7 @@
 		canvas.height = canvas.width = 600;
 
 		var context = canvas.getContext('2d');
-		var socket = io.connect('http://10.182.51.61:4242' );
+		var socket = io.connect('http://localhost:4242' );
 		socket.on('connect', function () {
 			socket.id = socket.socket.sessionid;
 		});
@@ -32,13 +32,9 @@
 		Cube.prototype.updateWithCubeData = function (data) {
 
 			if (data === undefined) return;
-
 			/*
-
 			for (var prop in data) this[prop] = data[prop];
-
 			*/
-
 			if (data.x !== undefined) this.x = data.x;
 			if (data.y !== undefined) this.y = data.y;
 			if (data.edge !== undefined) this.edge = data.edge;
@@ -55,11 +51,11 @@
 				var oldY = this.y;
 
 				//LOGICA de teclado
-				if (keyboard.char('D')) this.x += this.speed;
-				else if (keyboard.char('A')) this.x -= this.speed;
+				if (keyboard.keys[39]) this.x += this.speed;
+				else if (keyboard.keys[37]) this.x -= this.speed;
 
-				if (keyboard.char('W')) this.y -= this.speed;
-				else if (keyboard.char('S')) this.y += this.speed;
+				if (keyboard.keys[38]) this.y -= this.speed;
+				else if (keyboard.keys[40]) this.y += this.speed;
 
 				if (oldX !== this.x || oldY !== this.y) {
 					socket.emit('cubeUpdate', this);

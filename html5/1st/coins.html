@@ -1,0 +1,114 @@
+<html>
+<head>
+	<style>
+		body {
+			margin: 0px;
+			padding: 0px;
+		}
+	</style>
+	<script src="requestAnimationFrame.js"></script>
+	<script src="keyboard.js"></script>
+</head>
+<body>
+	<canvas id="myCanvas"></canvas>
+	<script>
+	var keyboard = new KeyboardJS(false);
+	var canvas = document.getElementById("myCanvas");
+	var context = canvas.getContext('2d');
+		
+		function Coin() {
+			this.x = Math.random()*canvas.width;
+			this.y = Math.random()*canvas.height;
+			this.r = 16;
+			this.ai = 0;
+			this.af = 2*Math.PI;
+			//this.acw = true;
+		}
+		Coin.prototype = {
+			logic: function() {
+
+			},
+			render: function (ctx) {
+				ctx.fillStyle = "yellow";
+				ctx.fill();
+				ctx.beginPath();
+				ctx.arc(this.x, this.y, this.r, this.ai, this.af, true);
+			}
+		}
+
+		function Cube() {
+			this.x = Math.random()*canvas.width;
+			this.y = Math.random()*canvas.height;
+			this.edge = Math.floor(Math.random()*20)+5;
+			this.vx = this.vy= Math.random()*6 - 3;
+		}
+		Cube.prototype = {
+			logic : function(dt) {
+				dt /= 8;			
+				var sx = Math.abs(this.vx)*dt;
+				var sy = Math.abs(this.vy)*dt;
+
+				if (keyboard.keys[38]) {
+					this.y -= this.vy*sy;
+				}
+				if(keyboard.keys[40]) {
+					this.y += this.vy*sy;
+				}
+				if(keyboard.keys[39]) {
+					this.x += this.vx*sx;
+				}
+				if(keyboard.keys[37]) {
+					this.x -= this.vx*sx;
+				}
+			},
+			render : function(ctx) {
+				ctx.fillStyle = "blue";
+				ctx.fillRect(this.x, this.y, this.edge, this.edge);
+
+			}
+		}
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+		
+		var cube = new Cube();
+		var oldDate = +new Date ();
+		
+		var coins = [];
+		for (var i = 0; i < 10; ++i) coins.push(new Coin());
+		
+		function mainLoop() {
+			var newDate = +new Date ();
+			var delta = newDate - oldDate;
+			oldDate = newDate;
+			context.clearRect(0,0,canvas.width,canvas.height);
+
+			cube.logic(delta);
+			cube.render(context);
+
+			for(var i = 0; i < coins.length; ++i) {
+				var coin = coins[i];
+				coin.logic(delta);
+				coin.render(context);
+			}
+			for(j = coins.length - 1; j >= 0; --j) {
+				if((coins[j].r+cube.edge/2) > Math.sqrt(Math.pow(coins[j].x-cube.x,2)+Math.pow(coins[j].y-cube.y,2))) {
+					coins.splice(j,1);
+					
+				}
+			}
+
+		}
+		function loopCaller() {
+			requestAnimationFrame(loopCaller);
+			mainLoop();
+		}
+		requestAnimationFrame(loopCaller);
+		window.onresize = function () {
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+			mainLoop();
+		}
+		window.onresize();
+	</script> 
+</body>
+</html>

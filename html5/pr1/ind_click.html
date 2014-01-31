@@ -1,0 +1,92 @@
+<html>
+<head>
+	<style>
+		body {
+			margin: 0px;
+			padding: 0px;
+		}
+	</style>
+	<script src="requestAnimationFrame.js"></script>
+	<script src="keyboard.js"></script>
+	<script src="socket.io.min.js"></script>
+</head>
+<body>
+	<canvas id="myCanvas"></canvas>
+
+///////////////////////
+<script>
+  var socket = io.connect('http://localhost');
+  socket.on('news', function (data) {
+    console.log(data);
+    socket.emit('my other event', { my: 'data' });
+  });
+</script>
+//////////////////////
+
+	<script>
+		var canvas = document.getElementById("myCanvas");
+		var context = canvas.getContext('2d');
+		var keyboard = new KeyboardJS(false);
+		var socket = io.socket('http://localhost:4242');
+		
+		socket.on('connect', function() {
+			socket.id = socket.socket.sessionid;
+		});
+
+		function get_random_color() {
+    		var letters = '0123456789ABCDEF'.split('');
+    		var color = '#';
+   			 for (var i = 0; i < 6; i++ ) {
+        		color += letters[Math.round(Math.random() * 15)];
+    		}
+    		return color;
+		}
+
+		function Coin() {
+			this.x = Math.random()*canvas.width;
+			this.y = Math.random()*canvas.height;
+			this.r = 16;
+			this.ai = 0;
+			this.af = 2*Math.PI;
+		}
+		Coin.prototype = {
+			logic: function(id) {
+
+			},
+			render: function(ctx) {
+				ctx.fillStyle = get_random_color();
+				ctx.fill();
+				ctx.beginPath();
+				ctx.arc(this.x,this.y,this.r,this.ai,this.af);
+			}
+		}
+
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+
+		var oldDate = +new Date ();
+		var coins = [];
+		for(var i = 0; i < 10; ++i) coins.push(new Coin());
+
+		function mainLoop() {
+			var newDate = +new Date ();
+			var delta = newDate - oldDate;
+			oldDate = newDate;
+			context.clearRect(0,0,canvas.width,canvas.height);
+
+			for (var i = coins.length - 1; i >= 0; i--) {
+				var coin = coins[i];
+				coin.logic();
+				coin.render(context);
+			}
+		}
+		window.onresize = function () {
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+			mainLoop();
+		}
+		window.onresize();
+		requestAnimFrame(mainLoop);
+	</script>
+</body>
+</html>

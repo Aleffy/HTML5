@@ -1,0 +1,112 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<style>
+	body{
+		margin: 0px;
+		padding: 0px;
+	}
+	</style>
+	<script src="requestAnimFrame.js"></script>
+	<script src="Keyboard.js"></script>
+	<script src="socket.io.min.js"></script>
+	</head>
+	<body>
+		<canvas id="myCanvas" style="background-color: white;"></canvas>
+		<script>
+		/*
+			var obj = { x: 4,  };
+			var obj2;
+			obj2.x = 4;
+			obj2["x"] = 4;
+		*/		
+		var canvas = document.getElementById('myCanvas');
+		var context = canvas.getContext('2d');
+		var keyboard = new KeyboardJS(false);
+		//context.fillStyle = '#99FF99';
+		var canvasColor = "white";
+		var username = prompt("Enter your username:") || "Anonymous";
+
+		var socket = io.connect('http://localhost:4242' );
+		socket.on('connect', function () {
+			socket.id = socket.socket.sessionid;
+		});
+		socket.on('connect', function () {
+			socket.emit('setusername',username);
+		});
+
+		// data = {id: x, username: y, score: z};
+		socket.on('update', function (player) {
+			players[player.id] = player;
+			render(context);
+		});
+
+		var players = {};
+
+		function Player(id) {
+			this.id = id;
+		}
+		Player.prototype = {
+			score: 0
+		}
+		
+		function render (ctx) {
+			ctx.fillStyle = canvasColor;
+			ctx.fillRect(0, 0, canvas.width,canvas.height);
+			ctx.textBaseline = "top";
+			var position = 5;
+			ctx.fillStyle = "black";
+			for (var key in players) {
+				ctx.font = 'italic 15pt Calibri';
+				ctx.fillText(players[key].username +" has " +players[key].score +" points.",50,position);
+				 position+= 20;
+			}
+		}
+		var keyPress = false;
+
+		document.addEventListener('keydown', function (e) {
+			if (e.keyCode == 32 && !keyPress) {
+				keyPress = true;
+				socket.emit('hit');
+			}
+		});
+
+		document.addEventListener('keyup', function (e) {
+			if(e.keyCode == 32) keyPress = false;
+		});
+
+
+		socket.on('pintar', function (color) {
+			canvasColor = color;
+			console.log('render');
+			render(context);
+		})
+		socket.on('PlayersDisconnect', function (id) {
+			delete players[id];
+			render(context);
+		});
+
+
+		socket.on('disconnect', function (id) {
+			delete players[id];
+		});
+
+		function get_random_color() {
+    		var letters = '0123456789ABCDEF'.split('');
+    		var color = '#';
+   			 for (var i = 0; i < 6; i++ ) {
+        		color += letters[Math.round(Math.random() * 15)];
+    		}
+    		return color;
+		}
+
+		window.onresize = function () {
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+			render(context);
+		}
+		window.onresize();
+
+		</script>
+	</body>
+</html>
